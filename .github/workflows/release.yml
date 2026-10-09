@@ -1,0 +1,39 @@
+name: 🚀 Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version-type:
+        description: Select the version to increment such as major, minor, or patch
+        required: true
+        default: patch
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  release:
+    name: Release Package
+    uses: grovegs/workflows/.github/workflows/package-release.yml@v1.3.0
+    with:
+      package-name: SecureStorage
+      version-type: ${{ inputs.version-type }}
+      runs-on: ubuntu-latest
+      readme-file: README.md
+      license-file: LICENSE
+      unity-package: src/GroveGames.SecureStorage.Unity/Packages/com.grovegames.securestorage
+      create-tag: true
+      publish-github: true
+      publish-nuget: false
+      publish-discord: true
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+      client-id: ${{ secrets.CLIENT_ID }}
+      app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
