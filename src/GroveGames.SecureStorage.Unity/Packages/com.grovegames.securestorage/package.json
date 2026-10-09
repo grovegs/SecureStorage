@@ -1,6 +1,6 @@
 {
   "name": "com.grovegames.securestorage",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "displayName": "GroveGames.SecureStorage",
   "description": "Key-value storage in the iOS Keychain and Android Keystore for Unity",
   "unity": "2022.3",
