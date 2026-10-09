@@ -1,0 +1,20 @@
+{
+  "name": "com.grovegames.securestorage",
+  "version": "0.0.0",
+  "displayName": "GroveGames.SecureStorage",
+  "description": "Key-value storage in the iOS Keychain and Android Keystore for Unity",
+  "unity": "2022.3",
+  "documentationUrl": "https://github.com/grovegs/SecureStorage",
+  "changelogUrl": "https://github.com/grovegs/SecureStorage/releases",
+  "licensesUrl": "https://github.com/grovegs/SecureStorage/blob/main/LICENSE",
+  "keywords": [
+    "secure",
+    "storage",
+    "keychain",
+    "keystore"
+  ],
+  "author": {
+    "name": "Grove Games",
+    "url": "https://github.com/grovegs"
+  }
+}
