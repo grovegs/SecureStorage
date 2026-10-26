@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src\GroveGames.SecureStorage\GroveGames.SecureStorage.csproj" />
+  <Project Path="tests\GroveGames.SecureStorage.Tests\GroveGames.SecureStorage.Tests.csproj" />
+</Solution>

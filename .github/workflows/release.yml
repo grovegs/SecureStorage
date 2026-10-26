@@ -12,10 +12,19 @@ on:
           - major
           - minor
           - patch
+      environment:
+        description: Development publishes to GitHub Packages, Production publishes to nuget.org and GitHub Releases
+        required: true
+        default: Development
+        type: choice
+        options:
+          - Development
+          - Production
 
 permissions:
   contents: write
   actions: read
+  packages: write
 
 jobs:
   release:
@@ -25,15 +34,20 @@ jobs:
       package-name: SecureStorage
       version-type: ${{ inputs.version-type }}
       runs-on: ubuntu-latest
+      dotnet-project: src/GroveGames.SecureStorage
+      global-json-file: global.json
+      directory-build-props: Directory.Build.props
       readme-file: README.md
       license-file: LICENSE
       unity-package: src/GroveGames.SecureStorage.Unity/Packages/com.grovegames.securestorage
       create-tag: true
-      publish-github: true
-      publish-nuget: false
+      publish-github: ${{ inputs.environment == 'Production' }}
+      publish-nuget: ${{ inputs.environment == 'Production' }}
+      publish-github-packages: ${{ inputs.environment == 'Development' }}
       publish-discord: true
     secrets:
       github-token: ${{ secrets.GITHUB_TOKEN }}
       client-id: ${{ secrets.CLIENT_ID }}
       app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      nuget-api-key: ${{ secrets.NUGET_API_KEY }}
       discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
