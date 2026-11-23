@@ -6,7 +6,7 @@ namespace GroveGames.SecureStorage.Unity
     {
         public static IContainerBuilder AddSecureStorage(this IContainerBuilder builder)
         {
-            return builder.AddSingleton<ISecureStorage, SecureStorage>();
+            return builder.AddSingleton<ISecureStorage, UnitySecureStorage>();
         }
     }
 }
