@@ -100,7 +100,7 @@ public sealed class SecureStorageTests
     [Fact]
     public void Write_StoreRejects_ReturnsFalse()
     {
-        var storage = new SecureStorage(new TestRejectingStore());
+        var storage = new SecureStorage(new FakeRejectingStore());
 
         var written = storage.Write("token", "value");
 
@@ -110,14 +110,14 @@ public sealed class SecureStorageTests
     [Fact]
     public void Delete_StoreRejects_ReturnsFalse()
     {
-        var storage = new SecureStorage(new TestRejectingStore());
+        var storage = new SecureStorage(new FakeRejectingStore());
 
         var deleted = storage.Delete("token");
 
         Assert.False(deleted);
     }
 
-    private sealed class TestRejectingStore : ISecureStore
+    private sealed class FakeRejectingStore : ISecureStore
     {
         public bool TryRead(string key, [NotNullWhen(true)] out string? value)
         {
