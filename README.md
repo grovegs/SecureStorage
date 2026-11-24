@@ -38,10 +38,10 @@ Install the core through [NuGetForUnity](https://github.com/GlitchEnzo/NuGetForU
 
 ## Usage
 
-In Unity, `SecureStorage` picks the Keychain, the Keystore or `PlayerPrefs` for the current platform:
+In Unity, `UnitySecureStorage` picks the Keychain, the Keystore or `PlayerPrefs` for the current platform:
 
 ```csharp
-ISecureStorage storage = new SecureStorage();
+ISecureStorage storage = new UnitySecureStorage();
 
 storage.Write("session-token", token);
 
@@ -63,7 +63,7 @@ builder.AddSecureStorage();
 In .NET, pass a store to the core `SecureStorage`:
 
 ```csharp
-var storage = new GroveGames.SecureStorage.SecureStorage(new InMemorySecureStore());
+var storage = new SecureStorage(new InMemorySecureStore());
 ```
 
 Values stay on the device. Restoring a backup to a new device restores the app's files but not these values, so data that depends on them must be recreatable.

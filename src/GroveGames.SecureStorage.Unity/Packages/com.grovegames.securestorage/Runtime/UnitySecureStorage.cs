@@ -1,12 +1,12 @@
 namespace GroveGames.SecureStorage.Unity
 {
-    public sealed class SecureStorage : ISecureStorage
+    public sealed class UnitySecureStorage : ISecureStorage
     {
-        private readonly global::GroveGames.SecureStorage.SecureStorage _storage;
+        private readonly SecureStorage _storage;
 
-        public SecureStorage()
+        public UnitySecureStorage()
         {
-            _storage = new global::GroveGames.SecureStorage.SecureStorage(CreateStore());
+            _storage = new SecureStorage(CreateStore());
         }
 
         public bool TryRead(string key, out string value)

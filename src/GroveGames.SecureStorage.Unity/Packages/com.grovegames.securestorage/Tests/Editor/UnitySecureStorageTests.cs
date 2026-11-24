@@ -3,15 +3,15 @@ using NUnit.Framework;
 
 namespace GroveGames.SecureStorage.Unity.Editor.Tests
 {
-    public sealed class SecureStorageTests
+    public sealed class UnitySecureStorageTests
     {
-        private SecureStorage _storage;
+        private UnitySecureStorage _storage;
         private string _key;
 
         [SetUp]
         public void SetUp()
         {
-            _storage = new SecureStorage();
+            _storage = new UnitySecureStorage();
             _key = "GroveGames.SecureStorage.Tests." + Guid.NewGuid().ToString("N");
         }
 
