@@ -14,3 +14,9 @@
 - Unity code uses block namespaces and C# 9.
 - Every file and folder in the package needs a `.meta` with a 32-character lowercase hex GUID. Existing asmdef GUIDs must not change, because projects reference them.
 - Tests are EditMode tests in `Tests/Editor`, named `MethodName_Condition_Expected`.
+
+## Agent Skills
+
+- The rules for game code that uses this package are an agent skill. Its source is `skills/grovegames-securestorage/`: `SKILL.md` holds the rules that apply everywhere, `unity.md` holds only what differs in Unity. It is optional.
+- The release writes the skill the Unity package ships, the same way it copies the README and the license: `SKILL.md` followed by `unity.md`, when there is one. Never edit the copy under `Skills~/`; the next release replaces it.
+- The NuGet package ships `skills/grovegames-securestorage/SKILL.md` as it is.
