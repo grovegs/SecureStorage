@@ -9,9 +9,9 @@ namespace GroveGames.SecureStorage.Unity
             _storage = new SecureStorage(CreateStore());
         }
 
-        public bool TryRead(string key, out string value)
+        public SecureStorageReadResult Read(string key, out string value)
         {
-            return _storage.TryRead(key, out value);
+            return _storage.Read(key, out value);
         }
 
         public bool Write(string key, string value)

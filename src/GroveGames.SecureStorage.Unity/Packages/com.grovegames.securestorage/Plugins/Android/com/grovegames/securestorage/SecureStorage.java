@@ -28,27 +28,23 @@ public final class SecureStorage {
         preferences = context.getApplicationContext().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
     }
 
-    public String read(String key) {
+    public String read(String key) throws Exception {
         String stored = preferences.getString(key, null);
 
         if (stored == null) {
             return null;
         }
 
-        try {
-            byte[] data = Base64.decode(stored, Base64.NO_WRAP);
+        byte[] data = Base64.decode(stored, Base64.NO_WRAP);
 
-            if (data.length <= IV_LENGTH) {
-                return null;
-            }
-
-            Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-            cipher.init(Cipher.DECRYPT_MODE, getOrCreateKey(), new GCMParameterSpec(TAG_LENGTH, data, 0, IV_LENGTH));
-            byte[] value = cipher.doFinal(data, IV_LENGTH, data.length - IV_LENGTH);
-            return new String(value, StandardCharsets.UTF_8);
-        } catch (Exception exception) {
-            return null;
+        if (data.length <= IV_LENGTH) {
+            throw new IllegalStateException("The stored value of '" + key + "' is too short to decrypt.");
         }
+
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+        cipher.init(Cipher.DECRYPT_MODE, getOrCreateKey(), new GCMParameterSpec(TAG_LENGTH, data, 0, IV_LENGTH));
+        byte[] value = cipher.doFinal(data, IV_LENGTH, data.length - IV_LENGTH);
+        return new String(value, StandardCharsets.UTF_8);
     }
 
     public boolean write(String key, String value) {

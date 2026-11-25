@@ -45,14 +45,20 @@ ISecureStorage storage = new UnitySecureStorage();
 
 storage.Write("session-token", token);
 
-if (storage.TryRead("session-token", out var value))
+switch (storage.Read("session-token", out var value))
 {
+    case SecureStorageReadResult.Found:
+        break;
+    case SecureStorageReadResult.Missing:
+        break;
+    case SecureStorageReadResult.Failed:
+        break;
 }
 
 storage.Delete("session-token");
 ```
 
-Keys cannot be empty and values cannot be null. `Write` and `Delete` return `false` when the platform store rejects the change.
+Keys cannot be empty and values cannot be null. `Read` returns `Missing` when nothing is stored under the key and `Failed` when a value is stored but could not be read right now (the Keychain is locked, the Keystore key is unavailable, or the stored value is damaged). `Write` and `Delete` return `false` when the platform store rejects the change.
 
 With GroveGames.DependencyInjection installed, register it in an installer and inject `ISecureStorage`:
 

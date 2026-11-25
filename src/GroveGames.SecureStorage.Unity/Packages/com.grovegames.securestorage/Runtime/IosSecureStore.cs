@@ -7,8 +7,10 @@ namespace GroveGames.SecureStorage.Unity
 {
     internal sealed class IosSecureStore : ISecureStore
     {
+        private const int MissingStatus = 1;
+
         [DllImport("__Internal")]
-        private static extern IntPtr GroveGamesSecureStorage_Read(byte[] key, int keyLength, out int valueLength);
+        private static extern IntPtr GroveGamesSecureStorage_Read(byte[] key, int keyLength, out int valueLength, out int status);
 
         [DllImport("__Internal")]
         [return: MarshalAs(UnmanagedType.I1)]
@@ -21,15 +23,15 @@ namespace GroveGames.SecureStorage.Unity
         [DllImport("__Internal")]
         private static extern void GroveGamesSecureStorage_Free(IntPtr buffer);
 
-        public bool TryRead(string key, out string value)
+        public SecureStorageReadResult Read(string key, out string value)
         {
             var keyBytes = Encoding.UTF8.GetBytes(key);
-            var buffer = GroveGamesSecureStorage_Read(keyBytes, keyBytes.Length, out var valueLength);
+            var buffer = GroveGamesSecureStorage_Read(keyBytes, keyBytes.Length, out var valueLength, out var status);
 
             if (buffer == IntPtr.Zero)
             {
                 value = null;
-                return false;
+                return status == MissingStatus ? SecureStorageReadResult.Missing : SecureStorageReadResult.Failed;
             }
 
             try
@@ -37,7 +39,7 @@ namespace GroveGames.SecureStorage.Unity
                 var valueBytes = new byte[valueLength];
                 Marshal.Copy(buffer, valueBytes, 0, valueLength);
                 value = Encoding.UTF8.GetString(valueBytes);
-                return true;
+                return SecureStorageReadResult.Found;
             }
             finally
             {

@@ -6,18 +6,18 @@ namespace GroveGames.SecureStorage.Unity
     {
         private const string KeyPrefix = "GroveGames.SecureStorage.";
 
-        public bool TryRead(string key, out string value)
+        public SecureStorageReadResult Read(string key, out string value)
         {
             var prefsKey = KeyPrefix + key;
 
             if (!PlayerPrefs.HasKey(prefsKey))
             {
                 value = null;
-                return false;
+                return SecureStorageReadResult.Missing;
             }
 
             value = PlayerPrefs.GetString(prefsKey);
-            return true;
+            return SecureStorageReadResult.Found;
         }
 
         public bool Write(string key, string value)

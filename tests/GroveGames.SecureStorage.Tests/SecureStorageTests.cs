@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace GroveGames.SecureStorage.Tests;
+﻿namespace GroveGames.SecureStorage.Tests;
 
 public sealed class SecureStorageTests
 {
@@ -11,26 +9,26 @@ public sealed class SecureStorageTests
     }
 
     [Fact]
-    public void Write_ThenTryRead_ReturnsValue()
+    public void Write_ThenRead_ReturnsValue()
     {
         var storage = new SecureStorage(new InMemorySecureStore());
 
         var written = storage.Write("token", "value");
-        var found = storage.TryRead("token", out var value);
+        var result = storage.Read("token", out var value);
 
         Assert.True(written);
-        Assert.True(found);
+        Assert.Equal(SecureStorageReadResult.Found, result);
         Assert.Equal("value", value);
     }
 
     [Fact]
-    public void TryRead_MissingKey_ReturnsFalse()
+    public void Read_MissingKey_ReturnsMissing()
     {
         var storage = new SecureStorage(new InMemorySecureStore());
 
-        var found = storage.TryRead("missing", out var value);
+        var result = storage.Read("missing", out var value);
 
-        Assert.False(found);
+        Assert.Equal(SecureStorageReadResult.Missing, result);
         Assert.Null(value);
     }
 
@@ -41,7 +39,7 @@ public sealed class SecureStorageTests
         storage.Write("token", "first");
 
         storage.Write("token", "second");
-        storage.TryRead("token", out var value);
+        storage.Read("token", out var value);
 
         Assert.Equal("second", value);
     }
@@ -53,20 +51,20 @@ public sealed class SecureStorageTests
         storage.Write("token", "value");
 
         var deleted = storage.Delete("token");
-        var found = storage.TryRead("token", out _);
+        var result = storage.Read("token", out _);
 
         Assert.True(deleted);
-        Assert.False(found);
+        Assert.Equal(SecureStorageReadResult.Missing, result);
     }
 
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void TryRead_NullOrEmptyKey_Throws(string? key)
+    public void Read_NullOrEmptyKey_Throws(string? key)
     {
         var storage = new SecureStorage(new InMemorySecureStore());
 
-        Assert.ThrowsAny<ArgumentException>(() => storage.TryRead(key!, out _));
+        Assert.ThrowsAny<ArgumentException>(() => storage.Read(key!, out _));
     }
 
     [Theory]
@@ -108,6 +106,17 @@ public sealed class SecureStorageTests
     }
 
     [Fact]
+    public void Read_StoreFails_ReturnsFailed()
+    {
+        var storage = new SecureStorage(new FakeRejectingStore());
+
+        var result = storage.Read("token", out var value);
+
+        Assert.Equal(SecureStorageReadResult.Failed, result);
+        Assert.Null(value);
+    }
+
+    [Fact]
     public void Delete_StoreRejects_ReturnsFalse()
     {
         var storage = new SecureStorage(new FakeRejectingStore());
@@ -119,10 +128,10 @@ public sealed class SecureStorageTests
 
     private sealed class FakeRejectingStore : ISecureStore
     {
-        public bool TryRead(string key, [NotNullWhen(true)] out string? value)
+        public SecureStorageReadResult Read(string key, out string? value)
         {
             value = null;
-            return false;
+            return SecureStorageReadResult.Failed;
         }
 
         public bool Write(string key, string value)

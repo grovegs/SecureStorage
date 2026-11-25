@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace GroveGames.SecureStorage;
+﻿namespace GroveGames.SecureStorage;
 
 public sealed class SecureStorage : ISecureStorage
 {
@@ -12,10 +10,10 @@ public sealed class SecureStorage : ISecureStorage
         _store = store;
     }
 
-    public bool TryRead(string key, [NotNullWhen(true)] out string? value)
+    public SecureStorageReadResult Read(string key, out string? value)
     {
         ArgumentException.ThrowIfNullOrEmpty(key);
-        return _store.TryRead(key, out value);
+        return _store.Read(key, out value);
     }
 
     public bool Write(string key, string value)

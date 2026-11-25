@@ -20,9 +20,10 @@ static NSMutableDictionary *GroveGamesSecureStorageQuery(const void *key, int ke
     } mutableCopy];
 }
 
-extern "C" void *GroveGamesSecureStorage_Read(const void *key, int keyLength, int *valueLength)
+extern "C" void *GroveGamesSecureStorage_Read(const void *key, int keyLength, int *valueLength, int *status)
 {
     *valueLength = 0;
+    *status = 2;
     NSMutableDictionary *query = GroveGamesSecureStorageQuery(key, keyLength);
 
     if (query == nil)
@@ -34,8 +35,15 @@ extern "C" void *GroveGamesSecureStorage_Read(const void *key, int keyLength, in
     query[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitOne;
 
     CFTypeRef result = NULL;
+    OSStatus copyStatus = SecItemCopyMatching((__bridge CFDictionaryRef)query, &result);
 
-    if (SecItemCopyMatching((__bridge CFDictionaryRef)query, &result) != errSecSuccess || result == NULL)
+    if (copyStatus == errSecItemNotFound)
+    {
+        *status = 1;
+        return NULL;
+    }
+
+    if (copyStatus != errSecSuccess || result == NULL)
     {
         return NULL;
     }
@@ -50,6 +58,7 @@ extern "C" void *GroveGamesSecureStorage_Read(const void *key, int keyLength, in
 
     memcpy(buffer, data.bytes, data.length);
     *valueLength = (int)data.length;
+    *status = 0;
     return buffer;
 }
 
