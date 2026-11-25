@@ -22,17 +22,17 @@ namespace GroveGames.SecureStorage.Unity.Editor.Tests
         }
 
         [Test]
-        public void TryRead_MissingKey_ReturnsFalse()
+        public void Read_MissingKey_ReturnsMissing()
         {
-            Assert.IsFalse(_storage.TryRead(_key, out _));
+            Assert.AreEqual(SecureStorageReadResult.Missing, _storage.Read(_key, out _));
         }
 
         [Test]
-        public void Write_ThenTryRead_ReturnsValue()
+        public void Write_ThenRead_ReturnsValue()
         {
             Assert.IsTrue(_storage.Write(_key, "value"));
 
-            Assert.IsTrue(_storage.TryRead(_key, out var value));
+            Assert.AreEqual(SecureStorageReadResult.Found, _storage.Read(_key, out var value));
             Assert.AreEqual("value", value);
         }
 
@@ -42,7 +42,7 @@ namespace GroveGames.SecureStorage.Unity.Editor.Tests
             _storage.Write(_key, "first");
             _storage.Write(_key, "second");
 
-            _storage.TryRead(_key, out var value);
+            _storage.Read(_key, out var value);
             Assert.AreEqual("second", value);
         }
 
@@ -52,7 +52,7 @@ namespace GroveGames.SecureStorage.Unity.Editor.Tests
             _storage.Write(_key, "value");
 
             Assert.IsTrue(_storage.Delete(_key));
-            Assert.IsFalse(_storage.TryRead(_key, out _));
+            Assert.AreEqual(SecureStorageReadResult.Missing, _storage.Read(_key, out _));
         }
 
         [Test]

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace GroveGames.SecureStorage;
+﻿namespace GroveGames.SecureStorage;
 
 public sealed class InMemorySecureStore : ISecureStore
 {
@@ -11,9 +9,9 @@ public sealed class InMemorySecureStore : ISecureStore
         _values = new Dictionary<string, string>(StringComparer.Ordinal);
     }
 
-    public bool TryRead(string key, [NotNullWhen(true)] out string? value)
+    public SecureStorageReadResult Read(string key, out string? value)
     {
-        return _values.TryGetValue(key, out value);
+        return _values.TryGetValue(key, out value) ? SecureStorageReadResult.Found : SecureStorageReadResult.Missing;
     }
 
     public bool Write(string key, string value)

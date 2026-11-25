@@ -16,10 +16,19 @@ namespace GroveGames.SecureStorage.Unity
             _storage = new AndroidJavaObject(JavaClassName, activity);
         }
 
-        public bool TryRead(string key, out string value)
+        public SecureStorageReadResult Read(string key, out string value)
         {
-            value = _storage.Call<string>("read", key);
-            return value != null;
+            try
+            {
+                value = _storage.Call<string>("read", key);
+            }
+            catch (AndroidJavaException)
+            {
+                value = null;
+                return SecureStorageReadResult.Failed;
+            }
+
+            return value != null ? SecureStorageReadResult.Found : SecureStorageReadResult.Missing;
         }
 
         public bool Write(string key, string value)
