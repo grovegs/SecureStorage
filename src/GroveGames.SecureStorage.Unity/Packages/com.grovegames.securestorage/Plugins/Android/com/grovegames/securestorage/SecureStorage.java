@@ -6,6 +6,8 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.util.Base64;
 
+import java.io.File;
+
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 
@@ -21,14 +23,18 @@ public final class SecureStorage {
     private static final String TRANSFORMATION = "AES/GCM/NoPadding";
     private static final int IV_LENGTH = 12;
     private static final int TAG_LENGTH = 128;
+    private static final String KEY_MARKER_NAME = "com.grovegames.securestorage.key";
 
     private final SharedPreferences preferences;
+    private final File keyMarker;
 
     public SecureStorage(Context context) {
-        preferences = context.getApplicationContext().getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+        Context application = context.getApplicationContext();
+        preferences = application.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+        keyMarker = new File(application.getNoBackupFilesDir(), KEY_MARKER_NAME);
     }
 
-    public String read(String key) throws Exception {
+    public synchronized String read(String key) throws Exception {
         String stored = preferences.getString(key, null);
 
         if (stored == null) {
@@ -38,10 +44,15 @@ public final class SecureStorage {
         SecretKey secretKey = loadKey();
 
         if (secretKey == null) {
+            if (keyMarker.exists()) {
+                throw new IllegalStateException("The Keystore key is not available right now.");
+            }
+
             preferences.edit().clear().commit();
             return null;
         }
 
+        markKey();
         byte[] data = Base64.decode(stored, Base64.NO_WRAP);
 
         if (data.length <= IV_LENGTH) {
@@ -54,14 +65,20 @@ public final class SecureStorage {
         return new String(value, StandardCharsets.UTF_8);
     }
 
-    public boolean write(String key, String value) {
+    public synchronized boolean write(String key, String value) {
         try {
             SecretKey secretKey = loadKey();
 
             if (secretKey == null) {
+                if (keyMarker.exists()) {
+                    return false;
+                }
+
                 preferences.edit().clear().commit();
                 secretKey = createKey();
             }
+
+            markKey();
 
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
@@ -81,8 +98,15 @@ public final class SecureStorage {
         }
     }
 
-    public boolean delete(String key) {
+    public synchronized boolean delete(String key) {
         return preferences.edit().remove(key).commit();
+    }
+
+    private void markKey() {
+        try {
+            keyMarker.createNewFile();
+        } catch (Exception exception) {
+        }
     }
 
     private static SecretKey loadKey() throws Exception {
