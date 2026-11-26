@@ -72,7 +72,7 @@ In .NET, pass a store to the core `SecureStorage`:
 var storage = new SecureStorage(new InMemorySecureStore());
 ```
 
-Values stay on the device. Restoring a backup to a new device restores the app's files but not these values, so data that depends on them must be recreatable.
+Values stay on the device. Restoring a backup to a new device restores the app's files but not these values, so data that depends on them must be recreatable. On Android a backup can bring back the encrypted values without the Keystore key that reads them; the package tells this apart from a Keystore that is only unavailable for now, clears those values and reads them as `Missing`.
 
 ## Testing
 
