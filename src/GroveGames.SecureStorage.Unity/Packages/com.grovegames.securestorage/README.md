@@ -13,7 +13,7 @@ Key-value storage for .NET and Unity, backed by the iOS Keychain and the Android
 - **Core**: `ISecureStorage` and `SecureStorage` in the `GroveGames.SecureStorage` NuGet package validate keys and values and delegate to an `ISecureStore`. `InMemorySecureStore` is included for tests and tools.
 - **iOS**: Values are stored as Keychain items, accessible after the first unlock and never synced or restored to another device.
 - **Android**: Values are encrypted with AES-GCM using a key held in the Android Keystore, and stored in private shared preferences.
-- **Editor and other platforms**: Values are stored in `PlayerPrefs`, so the same code runs everywhere.
+- **Editor and other platforms**: Values are stored in `PlayerPrefs`, so the same code runs everywhere. On desktop and WebGL builds they are plain text in the registry, a preferences file or browser storage, so a player can read and edit them; only iOS and Android keep them secret.
 - **Dependency injection**: `AddSecureStorage()` registers `ISecureStorage` with [GroveGames.DependencyInjection](https://github.com/grovegs/DependencyInjection).
 
 ## Installation
