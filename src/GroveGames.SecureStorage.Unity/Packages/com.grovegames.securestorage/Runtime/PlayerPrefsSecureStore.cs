@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace GroveGames.SecureStorage.Unity
@@ -22,9 +23,17 @@ namespace GroveGames.SecureStorage.Unity
 
         public bool Write(string key, string value)
         {
-            PlayerPrefs.SetString(KeyPrefix + key, value);
-            PlayerPrefs.Save();
-            return true;
+            try
+            {
+                PlayerPrefs.SetString(KeyPrefix + key, value);
+                PlayerPrefs.Save();
+                return true;
+            }
+            catch (PlayerPrefsException exception)
+            {
+                Debug.LogException(exception);
+                return false;
+            }
         }
 
         public bool Delete(string key)
